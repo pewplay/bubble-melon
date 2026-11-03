@@ -653,15 +653,20 @@
       for (j = i + 1; j < n; j++) {
         var B = fruits[j];
         var dx = B.x - A.x, dy = B.y - A.y, rr = A.r + B.r + CM;
-        if (dx > rr || dx < -rr || dy > rr || dy < -rr) continue;
+        // Equal fruits merge when they visibly touch: resting stacks can settle a few pixels apart,
+        // so the merge test uses a tolerance that grows with fruit size.
+        var same = A.t === B.t && !A.merged && !B.merged;
+        var mergeReach = same ? A.r + B.r + Math.max(2.5, 0.1 * (A.r + B.r)) : 0;
+        var reach = Math.max(rr, mergeReach);
+        if (dx > reach || dx < -reach || dy > reach || dy < -reach) continue;
         var d2 = dx * dx + dy * dy;
+        if (same && d2 < mergeReach * mergeReach) mergePairs.push(A, B);
         if (d2 >= rr * rr) continue;
         var d = Math.sqrt(d2);
         var nx, ny;
         if (d > 1e-6) { nx = dx / d; ny = dy / d; } else { nx = 0; ny = 1; d = 0; }
         addContact(A, B, nx, ny, rr - d);
         A.armed = true; B.armed = true;
-        if (A.t === B.t && d < A.r + B.r + 0.2 && !A.merged && !B.merged) mergePairs.push(A, B);
       }
     }
   }

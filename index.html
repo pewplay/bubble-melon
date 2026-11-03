@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#cdeee2">
+  <title>Bubble Melon</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <canvas id="game" aria-label="Bubble Melon game area"></canvas>
+
+  <div id="corner" class="hidden">
+    <button id="btnPause" class="round" aria-label="Pause">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1.5"/><rect x="14" y="5" width="4" height="14" rx="1.5"/></svg>
+    </button>
+    <button id="btnMute" class="round" aria-label="Mute sound">
+      <svg class="on" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path class="wave" d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12"/></svg>
+      <svg class="off" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path class="wave" d="M16.5 9.5l5 5M21.5 9.5l-5 5"/></svg>
+    </button>
+  </div>
+
+  <div id="menu" class="overlay">
+    <div class="card">
+      <div class="fruit-row" id="menuFruits"></div>
+      <h1 class="logo"><span class="b">Bubble</span> <span class="m">Melon</span></h1>
+      <p class="tag">Drop, match and merge juicy fruit all the way up to a giant watermelon!</p>
+      <button id="btnPlay" class="btn primary">Play</button>
+      <p class="best">Best score: <b id="menuBest">0</b></p>
+      <p class="hint" id="menuHint">Move to aim, click or press Space to drop.</p>
+    </div>
+  </div>
+
+  <div id="pause" class="overlay hidden">
+    <div class="card">
+      <h2>Paused</h2>
+      <button id="btnResume" class="btn primary">Resume</button>
+      <button id="btnRestart" class="btn">Restart</button>
+    </div>
+  </div>
+
+  <div id="over" class="overlay hidden">
+    <div class="card">
+      <h2>The jar is full!</h2>
+      <div class="badge hidden" id="newBest">New best!</div>
+      <div class="final"><span>Score</span><b id="finalScore">0</b></div>
+      <div class="stats">
+        <div><span>Best</span><b id="finalBest">0</b></div>
+        <div><span>Biggest fruit</span><b id="finalBig"><img id="finalBigImg" alt=""> <i id="finalBigName">Cherry</i></b></div>
+      </div>
+      <button id="btnAgain" class="btn primary">Play again</button>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>

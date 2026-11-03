@@ -1,0 +1,68 @@
+{
+  "$schema": "https://raw.githubusercontent.com/pewplay/pewplay/main/schema/game.schema.json",
+  "title": "Bubble Melon",
+  "description": "Drop cute fruits into a glass jar and merge matching pairs into bigger ones until you grow a giant watermelon, free in your browser.",
+  "about": "Bubble Melon is a cosy physics puzzle about a jar full of smiling fruit. A little cloud carries each fruit in a soap bubble along the top of the jar; you slide it into position and let go. The fruit drops, bounces, rolls and settles into the pile, and whenever two identical fruits touch they pop together into the next, bigger one.\n\nThe ladder climbs from cherry to strawberry, grape, lemon, orange, apple, pear, peach, pineapple and melon, all the way up to a huge watermelon. Only the five smallest fruits ever come out of the bubble, so every big fruit has to be built by hand, and one good drop can set off a chain of merges worth combo bonuses.\n\nThe real-time physics is what makes it so satisfying: fruits wedge into gaps, topple off towers and roll into neighbours you never planned for. If the pile pokes above the dashed line for too long, the jar is full and the game ends, so keep it low and tidy to chase your best score.",
+  "howToPlay": "Aim the fruit along the top of the jar and drop it; it falls with real physics. When two identical fruits touch, they merge into the next bigger fruit and you score points, with bonuses for quick chains. The game ends when the pile stays above the dashed line at the top of the jar for a couple of seconds.",
+  "controls": [
+    {
+      "input": "Mouse",
+      "action": "Move to aim, click to drop"
+    },
+    {
+      "input": "Left / Right arrows or A / D",
+      "action": "Move the dropper"
+    },
+    {
+      "input": "Space / Down arrow",
+      "action": "Drop the fruit"
+    },
+    {
+      "input": "Drag and release",
+      "action": "Aim with your finger, let go to drop"
+    },
+    {
+      "input": "P / Esc",
+      "action": "Pause or resume"
+    }
+  ],
+  "tips": [
+    "Keep your biggest fruits in one corner so smaller ones do not get trapped beneath them.",
+    "Check the Next bubble before dropping, so you can leave a gap ready for the fruit that comes after.",
+    "Line up fruits in increasing size along the bottom so one merge can trigger a whole chain of combos.",
+    "Small fruits can roll off rounded tops, so drop them into valleys between two fruits where they will stay put."
+  ],
+  "faq": [
+    {
+      "question": "Is Bubble Melon free to play?",
+      "answer": "Yes, Bubble Melon is completely free and runs in your browser with no download or sign-up."
+    },
+    {
+      "question": "Can I play Bubble Melon on my phone or tablet?",
+      "answer": "Yes, drag anywhere on the screen to aim and lift your finger to drop; the jar fits both portrait and landscape screens."
+    },
+    {
+      "question": "What happens when two watermelons meet?",
+      "answer": "They burst in a shower of juice and sparkles for a big 250-point bonus, which also frees up lots of room in the jar."
+    }
+  ],
+  "category": "Puzzle",
+  "tags": [
+    "merge",
+    "physics",
+    "fruit",
+    "cute",
+    "drop"
+  ],
+  "author": "PewPlay",
+  "playMode": "SinglePlayer",
+  "orientation": "any",
+  "cover": "cover.png",
+  "screenshots": [
+    "screenshots/1.png",
+    "screenshots/2.png",
+    "screenshots/3.png"
+  ],
+  "added": "2026-11-03",
+  "draft": false
+}

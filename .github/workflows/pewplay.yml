@@ -1,0 +1,103 @@
+# Collega questo gioco a PewPlay. Non serve modificarlo.
+#
+#  1. Controlla game.json, index.html e immagini (anche sulle pull request).
+#     Se trova ERRORI la run fallisce: il gioco non verrebbe pubblicato.
+#  2. Dopo un push chiede al sito di ricostruirsi:
+#       main    → sito pubblico
+#       preview → sito di anteprima
+#  3. Nel riepilogo della run trovi il link diretto al gioco sul sito.
+#
+# Serve il secret PEWPLAY_DISPATCH_TOKEN (impostato una volta a livello di organizzazione).
+# Se manca o non funziona, la run NON fallisce: il sito si aggiorna alla build notturna.
+
+name: PewPlay
+
+on:
+  push:
+    branches: [main, preview]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  pewplay:
+    name: Controlla e pubblica
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Scarica il controllore di PewPlay
+        id: checker
+        continue-on-error: true
+        uses: actions/checkout@v5
+        with:
+          repository: ${{ github.repository_owner }}/pewplay
+          path: .pewplay
+          sparse-checkout: src
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      - name: Controlla il gioco
+        run: |
+          if [ ! -f .pewplay/src/check-game.js ]; then
+            echo "::warning title=Controllo saltato::Non è stato possibile scaricare ${{ github.repository_owner }}/pewplay. Il gioco verrà comunque controllato durante la build del sito."
+            exit 0
+          fi
+          node .pewplay/src/check-game.js .
+
+      - name: Aggiorna il sito
+        if: >-
+          github.event_name != 'pull_request' &&
+          !github.event.repository.is_template &&
+          (github.ref_name == 'main' || github.ref_name == 'preview')
+        env:
+          GH_TOKEN: ${{ secrets.PEWPLAY_DISPATCH_TOKEN }}
+          OWNER: ${{ github.repository_owner }}
+          REPO: ${{ github.event.repository.name }}
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          # Indirizzi del sito (da site.config.js del repo pewplay, se disponibile)
+          SITE_URL=""
+          if [ -f .pewplay/site.config.js ]; then
+            KEY=$([ "$BRANCH" = "preview" ] && echo previewUrl || echo url)
+            SITE_URL=$(node -e "import('./.pewplay/site.config.js').then(m => console.log(m.default.$KEY || '')).catch(() => console.log(''))")
+          fi
+          WHERE=$([ "$BRANCH" = "preview" ] && echo "sito di anteprima" || echo "sito pubblico")
+          DRAFT=$(node -e "try { console.log(require('./game.json').draft === true) } catch { console.log(false) }")
+          BUILD_URL="https://github.com/$OWNER/pewplay/actions/workflows/deploy.yml"
+
+          if [ -z "$GH_TOKEN" ]; then
+            echo "::warning title=Sito non avvisato::Il secret PEWPLAY_DISPATCH_TOKEN non è impostato. Il $WHERE si aggiornerà alla build notturna, oppure lanciala a mano: $BUILD_URL"
+            STATUS="Attenzione: secret PEWPLAY_DISPATCH_TOKEN mancante. Il $WHERE si aggiornerà alla build notturna (o lanciala a mano)."
+          elif OUT=$(gh api "repos/$OWNER/pewplay/dispatches" \
+                -f event_type=game-updated \
+                -f "client_payload[repo]=$REPO" \
+                -f "client_payload[branch]=$BRANCH" 2>&1); then
+            STATUS="Aggiornamento del $WHERE avviato: pronto in circa 2 minuti."
+          else
+            case "$OUT" in
+              *401*|*"Bad credentials"*) WHY="il token PEWPLAY_DISPATCH_TOKEN non è valido o è scaduto: rigeneralo e aggiorna il secret" ;;
+              *403*|*404*|*"Not Found"*)  WHY="il token PEWPLAY_DISPATCH_TOKEN non ha accesso al repo pewplay (serve Contents: Read and write su $OWNER/pewplay)" ;;
+              *)                         WHY="errore inatteso ($OUT)" ;;
+            esac
+            echo "::warning title=Sito non avvisato::$WHY. Il $WHERE si aggiornerà alla build notturna, oppure lanciala a mano: $BUILD_URL"
+            STATUS="Attenzione: non è stato possibile avviare l'aggiornamento del sito: $WHY."
+          fi
+
+          {
+            echo "### $REPO → $WHERE"
+            echo ""
+            echo "$STATUS"
+            echo ""
+            if [ "$BRANCH" = "main" ] && [ "$DRAFT" = "true" ]; then
+              echo "**Attenzione:** \`\"draft\": true\` in game.json: il gioco **non** compare sul sito pubblico finché non lo togli."
+            elif [ -n "$SITE_URL" ]; then
+              echo "Link: **$SITE_URL/$REPO/**"
+            fi
+            echo ""
+            echo "Stato della build: $BUILD_URL"
+          } >> "$GITHUB_STEP_SUMMARY"
